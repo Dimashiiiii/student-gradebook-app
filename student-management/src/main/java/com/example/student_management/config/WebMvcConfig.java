@@ -10,11 +10,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         // Перенаправляет все пути, которые не являются API-эндпоинтами, на index.html
+        // Обратите внимание на \\w вместо \w
         registry.addViewController("/{spring:[\\w-]+}")
-                .setViewName("forward:/"); // Перенаправляем на корень, а не напрямую на index.html
+                .setViewName("forward:/");
         registry.addViewController("/**/{spring:[\\w-]+}")
-                .setViewName("forward:/"); // Это для HTML5 History API
+                .setViewName("forward:/");
         registry.addViewController("/")
-                .setViewName("forward:/index.html"); // Прямой запрос на корень
+                .setViewName("forward:/index.html");
     }
 }
