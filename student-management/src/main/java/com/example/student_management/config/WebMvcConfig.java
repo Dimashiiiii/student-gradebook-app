@@ -1,6 +1,7 @@
-package com.example.student_management.config; // Убедитесь, что это ваш реальный пакет
+package com.example.student_management.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -9,13 +10,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // Перенаправляет все пути, которые не являются API-эндпоинтами, на index.html
-        // Обратите внимание на \\w вместо \w
-        registry.addViewController("/{spring:[\\w-]+}")
-                .setViewName("forward:/");
-        registry.addViewController("/**/{spring:[\\w-]+}")
-                .setViewName("forward:/");
-        registry.addViewController("/")
+        // Перенаправление всех не-API путей на index.html
+        registry.addViewController("/{path:[^\\.]*}")
                 .setViewName("forward:/index.html");
+
+        // Обработка вложенных путей
+        registry.addViewController("/{path:[^\\.]*}/**")
+                .setViewName("forward:/index.html");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Явное указание расположения статических ресурсов
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
     }
 }
