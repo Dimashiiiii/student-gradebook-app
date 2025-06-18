@@ -1,17 +1,20 @@
-package com.example.student_management.config; // Проверьте правильность вашего пакета
+package com.example.student_management.config; // Убедитесь, что это ваш реальный пакет
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        // Используем AntPathMatcher для сопоставления путей
-        configurer.setUseTrailingSlashMatch(true) // Опционально: разрешает или запрещает / в конце URL
-                .setUseRegisteredSuffixPatternMatch(true) // Опционально: разрешает или запрещает сопоставление суффиксов (.html, .json)
-                .setPatternParser(null); // Это заставляет Spring Boot использовать AntPathMatcher
+    public void addViewControllers(ViewControllerRegistry registry) {
+        // Перенаправляет все пути, которые не являются API-эндпоинтами, на index.html
+        registry.addViewController("/{spring:[\\w-]+}")
+                .setViewName("forward:/"); // Перенаправляем на корень, а не напрямую на index.html
+        registry.addViewController("/**/{spring:[\\w-]+}")
+                .setViewName("forward:/"); // Это для HTML5 History API
+        registry.addViewController("/")
+                .setViewName("forward:/index.html"); // Прямой запрос на корень
     }
 }
