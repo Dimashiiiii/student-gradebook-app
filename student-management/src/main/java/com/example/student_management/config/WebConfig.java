@@ -1,26 +1,20 @@
-package com.example.student_management.config;
+package com.example.student_management.config; // Убедитесь, что это ваш реальный пакет
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer {
 
-    /**
-     * Добавляет контроллеры просмотра, чтобы все нераспознанные пути
-     * (которые не являются API-эндпоинтами Spring Boot)
-     * перенаправлялись на index.html. Это необходимо для работы Angular-роутинга
-     * при прямом доступе к URL или при обновлении страницы.
-     */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // Перенаправляет все пути, не начинающиеся с /api/ на index.html
+        // Перенаправляет все пути, которые не являются API-эндпоинтами, на index.html
         registry.addViewController("/{spring:[\\w-]+}")
-                .setViewName("forward:/index.html");
+                .setViewName("forward:/"); // Перенаправляем на корень, а не напрямую на index.html
         registry.addViewController("/**/{spring:[\\w-]+}")
-                .setViewName("forward:/index.html");
+                .setViewName("forward:/"); // Это для HTML5 History API
         registry.addViewController("/")
-                .setViewName("forward:/index.html");
+                .setViewName("forward:/index.html"); // Прямой запрос на корень
     }
 }
