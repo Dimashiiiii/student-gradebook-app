@@ -1,0 +1,25 @@
+/* src/app/components/student-form/student-form.component.css */
+
+mat-card {
+  margin: 20px;
+  padding: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.full-width-field {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Стили для кнопок Material, если требуется дополнительная настройка */
+button {
+  min-width: 120px;
+}

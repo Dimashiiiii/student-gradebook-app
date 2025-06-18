@@ -1,0 +1,52 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ isEditMode ? 'Редактировать Студента' : 'Добавить Нового Студента' }}</mat-card-title>
+    <mat-card-subtitle>Пожалуйста, заполните все необходимые поля.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <!-- Форма для добавления/редактирования студента, привязанная к studentForm -->
+    <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+      <!-- Поле для имени -->
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Имя</mat-label>
+        <input matInput formControlName="firstName" required placeholder="Введите имя">
+        <!-- Отображение ошибки, если поле невалидно и было тронуто -->
+        <mat-error *ngIf="studentForm.get('firstName')?.invalid && studentForm.get('firstName')?.touched">
+          Имя обязательно.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Поле для фамилии -->
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Фамилия</mat-label>
+        <input matInput formControlName="lastName" required placeholder="Введите фамилию">
+        <mat-error *ngIf="studentForm.get('lastName')?.invalid && studentForm.get('lastName')?.touched">
+          Фамилия обязательна.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Поле для группы -->
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Группа</mat-label>
+        <input matInput formControlName="groupName" required placeholder="Введите название группы"> 
+        <mat-error *ngIf="studentForm.get('groupName')?.invalid && studentForm.get('groupName')?.touched">
+          Название группы обязательно.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Скрытое поле для ID в режиме редактирования -->
+      <input type="hidden" formControlName="id">
+
+      <!-- Кнопки формы -->
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!studentForm.valid">
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Сохранить Изменения' : 'Добавить Студента' }}
+        </button>
+        <button mat-button type="button" (click)="onCancel()">
+          <mat-icon>cancel</mat-icon> Отмена
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

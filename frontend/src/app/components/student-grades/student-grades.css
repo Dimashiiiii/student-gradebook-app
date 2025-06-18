@@ -1,0 +1,72 @@
+/* src/app/components/student-grades/student-grades.component.css */
+
+mat-card {
+  margin: 20px;
+  padding: 20px;
+  max-width: 800px; /* Ограничиваем ширину для лучшего вида */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+mat-toolbar {
+  margin: -20px -20px 20px -20px; /* Выравнивание по краю карточки */
+  border-radius: 4px 4px 0 0; /* Закругляем верхние углы */
+  padding: 0 16px; /* Внутренний отступ тулбара */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Легкая тень */
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Пространство между иконкой и текстом */
+  padding-left: 16px; /* Отступ слева от текста заголовка в тулбаре */
+}
+
+.table-container {
+  overflow: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.loading-spinner-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid red;
+  background-color: #ffebeb;
+  color: red;
+  border-radius: 4px;
+}
+
+/* Стили для формы оценки */
+.full-width-field {
+  width: 100%;
+}
+
+.form-divider {
+  margin: 20px 0; /* Заменяет инлайн-стиль */
+}
+
+.form-title {
+  margin-bottom: 20px; /* Заменяет инлайн-стиль */
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button mat-icon {
+  margin-right: 5px; /* Пространство между иконкой и текстом кнопки */
+}

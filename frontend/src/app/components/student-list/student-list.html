@@ -1,0 +1,124 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Список Студентов</mat-card-title>
+    <mat-card-subtitle>Управление всеми студентами и их группами</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <!-- Форма для фильтрации и сортировки -->
+    <form [formGroup]="filterSortForm" class="filter-sort-form">
+      <mat-form-field appearance="fill">
+        <mat-label>Фильтр по имени</mat-label>
+        <input matInput formControlName="firstNameFilter" placeholder="Введите имя">
+        <button mat-icon-button *ngIf="filterSortForm.get('firstNameFilter')?.value" matSuffix (click)="filterSortForm.get('firstNameFilter')?.setValue('')" type="button" matTooltip="Очистить фильтр имени">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Фильтр по фамилии</mat-label>
+        <input matInput formControlName="lastNameFilter" placeholder="Введите фамилию">
+        <button mat-icon-button *ngIf="filterSortForm.get('lastNameFilter')?.value" matSuffix (click)="filterSortForm.get('lastNameFilter')?.setValue('')" type="button" matTooltip="Очистить фильтр фамилии">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Сортировать по</mat-label>
+        <mat-select formControlName="sortBy">
+          <mat-option value="">Нет</mat-option>
+          <mat-option value="firstName">Имени</mat-option>
+          <mat-option value="lastName">Фамилии</mat-option>
+          <mat-option value="id">ID</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Порядок сортировки</mat-label>
+        <mat-select formControlName="sortOrder">
+          <mat-option value="asc">По возрастанию</mat-option>
+          <mat-option value="desc">По убыванию</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="warn" (click)="resetFiltersAndSort()" type="button" matTooltip="Сбросить все фильтры и сортировку">
+        <mat-icon>clear_all</mat-icon> Сбросить фильтры
+      </button>
+    </form>
+
+    <mat-divider class="filter-divider"></mat-divider>
+
+    <!-- Индикатор загрузки -->
+    <div *ngIf="loading$ | async" class="loading-spinner-container">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка студентов...</p>
+    </div>
+
+    <!-- Отображение ошибки -->
+    <div *ngIf="error$ | async as error" class="error-message">
+      <mat-error>Ошибка при загрузке студентов: {{ error?.message || 'Неизвестная ошибка' }}</mat-error>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="(students$ | async) || []" class="full-width-table mat-elevation-z2">
+
+        <!-- Колонка ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let student"> {{ student.id }} </td>
+        </ng-container>
+
+        <!-- Колонка Имя -->
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef> Имя </th>
+          <td mat-cell *matCellDef="let student"> {{ student.firstName }} </td>
+        </ng-container>
+
+        <!-- Колонка Фамилия -->
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef> Фамилия </th>
+          <td mat-cell *matCellDef="let student"> {{ student.lastName }} </td>
+        </ng-container>
+
+        <!-- Колонка Группа -->
+        <ng-container matColumnDef="groupName">
+          <th mat-header-cell *matHeaderCellDef> Группа </th>
+          <td mat-cell *matCellDef="let student"> {{ student.groupName }} </td>
+        </ng-container>
+
+        <!-- Колонка Действия -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Действия </th>
+          <td mat-cell *matCellDef="let student">
+            <button mat-icon-button color="accent" (click)="viewGrades(student.id!)" aria-label="Просмотреть оценки студента" type="button" matTooltip="Просмотреть оценки">
+              <mat-icon>grade</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="editStudent(student)" aria-label="Редактировать студента" type="button" matTooltip="Редактировать студента">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteStudent(student.id!)" aria-label="Удалить студента" type="button" matTooltip="Удалить студента">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Определяем строки таблицы -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Сообщение, если нет данных -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="5">
+            <ng-container *ngIf="!(loading$ | async) && !(error$ | async)">
+              Нет студентов для отображения. Пожалуйста, добавьте нового студента.
+            </ng-container>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </mat-card-content>
+  <mat-card-actions align="end">
+    <button mat-raised-button color="accent" (click)="addStudent()" type="button" matTooltip="Добавить нового студента">
+      <mat-icon>add</mat-icon> Добавить Студента
+    </button>
+  </mat-card-actions>
+</mat-card>

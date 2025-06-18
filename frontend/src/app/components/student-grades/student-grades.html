@@ -1,0 +1,133 @@
+<mat-card>
+  <mat-card-header>
+    <mat-toolbar>
+      <!-- Кнопка назад -->
+      <button mat-icon-button (click)="goBackToStudents()" aria-label="Назад к списку студентов" matTooltip="Вернуться к списку студентов">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <!-- Заголовок студента -->
+      <mat-card-title>
+        <ng-container *ngIf="student$ | async as student; else loadingStudent">
+          Оценки для: {{ student.firstName }} {{ student.lastName }} ({{ student.groupName }})
+        </ng-container>
+        <ng-template #loadingStudent>
+          <span *ngIf="!(errorStudents$ | async)">Загрузка данных студента...</span>
+        </ng-template>
+      </mat-card-title>
+    </mat-toolbar>
+    <mat-card-subtitle>Управление оценками студента</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <!-- Индикаторы загрузки и ошибок -->
+    <div *ngIf="(loadingStudents$ | async) || (loadingGrades$ | async)" class="loading-spinner-container">
+      <mat-spinner></mat-spinner>
+      <p>Загрузка данных...</p>
+    </div>
+
+    <div *ngIf="errorStudents$ | async as error" class="error-message">
+      <mat-error>Ошибка при загрузке данных студента: {{ error?.message || 'Неизвестная ошибка' }}</mat-error>
+    </div>
+    <div *ngIf="errorGrades$ | async as error" class="error-message">
+      <mat-error>Ошибка при загрузке оценок: {{ error?.message || 'Неизвестная ошибка' }}</mat-error>
+    </div>
+
+    <div class="table-container mat-elevation-z2">
+      <!-- Таблица оценок -->
+      <table mat-table [dataSource]="(grades$ | async) || []" class="full-width-table">
+
+        <!-- Колонка Предмет -->
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef> Предмет </th>
+          <td mat-cell *matCellDef="let grade"> {{ grade.subject }} </td>
+        </ng-container>
+
+        <!-- Колонка Оценка -->
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef> Оценка </th>
+          <td mat-cell *matCellDef="let grade"> {{ grade.score }} </td>
+        </ng-container>
+
+        <!-- Колонка Дата -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Дата </th>
+          <td mat-cell *matCellDef="let grade"> {{ grade.gradeDate | date:'shortDate' }} </td>
+        </ng-container>
+
+        <!-- Колонка Действия -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Действия </th>
+          <td mat-cell *matCellDef="let grade">
+            <button mat-icon-button color="primary" (click)="editGrade(grade)" aria-label="Редактировать оценку" type="button" matTooltip="Редактировать оценку">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteGrade(grade.id!)" aria-label="Удалить оценку" type="button" matTooltip="Удалить оценку">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Определяем строки таблицы -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Сообщение, если нет оценок -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">
+            <ng-container *ngIf="!(loadingGrades$ | async) && !(errorGrades$ | async)">
+              Нет оценок для этого студента.
+            </ng-container>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-divider class="form-divider"></mat-divider>
+
+    <!-- Форма для добавления/редактирования оценки -->
+    <mat-card-title class="form-title">
+      {{ isEditMode ? 'Редактировать Оценку' : 'Добавить Новую Оценку' }}
+    </mat-card-title>
+    <form [formGroup]="gradeForm" (ngSubmit)="onSubmit()">
+      <!-- Скрытое поле для studentId, так как оно уже установлено в TS -->
+      <input type="hidden" formControlName="studentId">
+      <input type="hidden" formControlName="id">
+
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Предмет</mat-label>
+        <input matInput formControlName="subject" required placeholder="Например, Математика">
+        <mat-error *ngIf="gradeForm.get('subject')?.invalid && gradeForm.get('subject')?.touched">
+          Предмет обязателен.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Оценка</mat-label>
+        <input matInput type="number" formControlName="score" required min="0" max="100" placeholder="От 0 до 100">
+        <mat-error *ngIf="gradeForm.get('score')?.invalid && gradeForm.get('score')?.touched">
+          Оценка обязательна и должна быть от 0 до 100.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width-field">
+        <mat-label>Дата</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="gradeDate" required>
+        <mat-hint>ММ/ДД/ГГГГ</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="gradeForm.get('gradeDate')?.invalid && gradeForm.get('gradeDate')?.touched">
+          Дата обязательна.
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!gradeForm.valid" matTooltip="{{ isEditMode ? 'Сохранить изменения оценки' : 'Добавить новую оценку' }}">
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ isEditMode ? 'Сохранить Оценку' : 'Добавить Оценку' }}
+        </button>
+        <button mat-button type="button" (click)="resetForm()" matTooltip="Сбросить форму">
+          <mat-icon>clear</mat-icon> Сбросить
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

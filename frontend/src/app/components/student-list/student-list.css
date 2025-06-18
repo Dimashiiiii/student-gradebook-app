@@ -1,0 +1,58 @@
+/* src/app/components/student-list/student-list.component.css */
+.table-container {
+  overflow: auto;
+  max-width: 100%;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+mat-card {
+  margin: 20px;
+  padding: 20px;
+}
+
+mat-card-actions {
+  padding-top: 16px;
+  padding-bottom: 0;
+}
+
+.loading-spinner-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid red;
+  background-color: #ffebeb;
+  color: red;
+  border-radius: 4px;
+}
+
+/* Стили для формы фильтрации и сортировки */
+.filter-sort-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: flex-end;
+}
+
+.filter-sort-form mat-form-field {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Стили для кнопки сброса фильтров */
+.filter-sort-form button {
+  white-space: nowrap;
+  height: 56px; /* Высота, соответствующая MatFormField для лучшего выравнивания */
+}
+
+.filter-divider {
+  margin: 20px 0;
+}
